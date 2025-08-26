@@ -3,7 +3,6 @@
 
 import { create } from 'zustand';
 import type { SolvePhysicsProblemOutput } from '@/ai/flows/solve-physics-problem-flow';
-import type { KinematicsState } from './kinematics-store';
 
 type PlotData = SolvePhysicsProblemOutput['plots'];
 

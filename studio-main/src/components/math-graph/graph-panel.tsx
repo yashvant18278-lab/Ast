@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { AlertTriangle, Info } from 'lucide-react';
 import { tryCompile, sampleExplicit, isImplicit } from '@/lib/mathEval';
 import { normalizeExpression } from '@/lib/math-utils';
+import type { PlotData as PlotlyPlotData, Layout } from 'plotly.js';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -34,12 +35,12 @@ export function GraphPanel() {
         data: [{
           x: xs,
           y: ys,
-          type: 'scatter',
+          type: 'scatter' as const,
           mode: 'lines',
           line: { color: 'hsl(var(--primary))' },
           connectgaps: false,
           hovertemplate: 'y: %{y:.2f}<br>x: %{x:.2f}<extra></extra>',
-        }],
+        }] as Partial<PlotlyPlotData>[],
         error: null,
       };
     } catch (err: any) {
@@ -91,7 +92,7 @@ export function GraphPanel() {
                 zerolinecolor: theme === 'dark' ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
                 griddash: 'dot',
                 showspikes: true,
-                spikesnap: 'cursor',
+                spikesnap: 'cursor' as const,
                 spikedash: 'dot',
                 spikecolor: theme === 'dark' ? '#A78BFA' : '#4F46E5',
               },
@@ -104,12 +105,12 @@ export function GraphPanel() {
                 scaleratio: 1,
                 griddash: 'dot',
                 showspikes: true,
-                spikesnap: 'cursor',
+                spikesnap: 'cursor' as const,
                 spikedash: 'dot',
                 spikecolor: theme === 'dark' ? '#A78BFA' : '#4F46E5',
               },
               showlegend: false,
-            }}
+            } as Partial<Layout>}
             useResizeHandler={true}
             style={{ width: '100%', height: '100%' }}
             config={{ 

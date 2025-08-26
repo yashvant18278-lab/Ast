@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { useUIStore } from '@/stores/ui-store';
+import type { Layout, PlotData as PlotlyPlotData } from 'plotly.js';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -58,7 +59,7 @@ export default function ProjectileMotionPage() {
     };
   }, [initialVelocity, angle, gravity]);
   
-  const layout = {
+  const layout: Partial<Layout> = {
       autosize: true,
       dragmode: 'pan',
       margin: { t: 40, r: 40, l: 60, b: 60 },
@@ -80,7 +81,7 @@ export default function ProjectileMotionPage() {
         zeroline: true, 
         gridcolor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
         showspikes: true,
-        spikesnap: 'cursor',
+        spikesnap: 'cursor' as const,
         spikedash: 'dot',
         spikecolor: theme === 'dark' ? '#A78BFA' : '#4F46E5',
       },
@@ -92,7 +93,7 @@ export default function ProjectileMotionPage() {
         scaleanchor: 'x', 
         scaleratio: 1,
         showspikes: true,
-        spikesnap: 'cursor',
+        spikesnap: 'cursor' as const,
         spikedash: 'dot',
         spikecolor: theme === 'dark' ? '#A78BFA' : '#4F46E5',
       },
@@ -111,11 +112,11 @@ export default function ProjectileMotionPage() {
                 data={[{
                   x: trajectory.x,
                   y: trajectory.y,
-                  type: 'scatter',
+                  type: 'scatter' as const,
                   mode: 'lines',
                   line: { color: 'hsl(var(--accent))' },
                   hovertemplate: 'Height: %{y:.2f} m<br>Range: %{x:.2f} m<extra></extra>',
-                }]}
+                } as Partial<PlotlyPlotData>]}
                 layout={layout}
                 useResizeHandler
                 style={{ width: '100%', height: '100%' }}
