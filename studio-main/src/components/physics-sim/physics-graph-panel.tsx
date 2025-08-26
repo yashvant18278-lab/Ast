@@ -3,7 +3,6 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
-import { usePhysicsStore } from '@/stores/physics-store';
 import { useKinematicsStore } from '@/stores/kinematics-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { useUIStore } from '@/stores/ui-store';
@@ -87,23 +86,8 @@ const ThemedGraph = React.memo(function ThemedGraph({ plot, index }: { plot: any
 });
 
 
-export function PhysicsGraphPanel({ useKinematics }: { useKinematics: boolean }) {
-  const { plotData: aiPlotData, aiIsLoading } = usePhysicsStore();
-  const kinematicsStore = useKinematics ? useKinematicsStore() : null;
-  
-  const plotData = aiPlotData ?? (kinematicsStore ? kinematicsStore.plotData : null);
-
-  if (aiIsLoading) {
-      return (
-          <section className="flex flex-col gap-4 flex-grow">
-              <div className="flex-grow flex items-center justify-center h-full rounded-lg border-2 border-dashed bg-card p-4">
-                  <div className="text-center text-muted-foreground">
-                      <p className="font-semibold">Generating graphs...</p>
-                  </div>
-              </div>
-          </section>
-      )
-  }
+export function PhysicsGraphPanel() {
+  const { plotData } = useKinematicsStore();
 
   if (!plotData || plotData.length === 0) {
       return (
