@@ -8,7 +8,7 @@ export function classifyEquation(input: string): string {
     if (!expr) return 'Unclassified';
 
     try {
-        const node = math.parse(expr);
+        const node: any = math.parse(expr);
         
         // Very basic checks first
         if (expr.includes('x^2') && expr.includes('y^2')) return 'Circle / Ellipse';
@@ -19,12 +19,12 @@ export function classifyEquation(input: string): string {
 
         let degree = 0;
         let hasX = false;
-        node.traverse(function (n) {
+        node.traverse(function (n: any) {
             if (n.isSymbolNode && n.name === 'x') {
                 hasX = true;
             }
             if (n.isOperatorNode && n.op === '^') {
-                if (n.args[0].isSymbolNode && n.args[0].name === 'x' && n.args[1].isConstantNode) {
+                if (n.args[0]?.isSymbolNode && n.args[0]?.name === 'x' && n.args[1]?.isConstantNode) {
                     degree = Math.max(degree, n.args[1].value);
                 }
             }
@@ -40,8 +40,8 @@ export function classifyEquation(input: string): string {
              }
         }
         
-        if (node.isOperatorNode && node.op === 'pow' && node.args[0].name === 'x') {
-            degree = Math.max(degree, node.args[1].value)
+        if (node.isOperatorNode && node.op === 'pow' && node.args[0]?.name === 'x') {
+            degree = Math.max(degree, node.args[1]?.value)
         }
 
         if (expr.match(/x\^2/)) degree = Math.max(degree, 2);

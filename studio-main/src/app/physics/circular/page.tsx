@@ -13,6 +13,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { Layout, PlotData as PlotlyPlotData } from 'plotly.js';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -57,7 +58,7 @@ export default function CircularMotionPage() {
     };
   }, [radius, angularVelocity, time]);
 
-  const layout = {
+  const layout: Partial<Layout> = {
       autosize: true,
       dragmode: 'pan',
       margin: { t: 40, r: 20, l: 40, b: 40 },
@@ -79,7 +80,7 @@ export default function CircularMotionPage() {
         showgrid: true, 
         gridcolor: theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
         showspikes: true,
-        spikesnap: 'cursor',
+        spikesnap: 'cursor' as const,
         spikedash: 'dot',
         spikecolor: theme === 'dark' ? '#A78BFA' : '#4F46E5',
       },
@@ -91,7 +92,7 @@ export default function CircularMotionPage() {
         scaleanchor: 'x', 
         scaleratio: 1,
         showspikes: true,
-        spikesnap: 'cursor',
+        spikesnap: 'cursor' as const,
         spikedash: 'dot',
         spikecolor: theme === 'dark' ? '#A78BFA' : '#4F46E5',
       },
@@ -99,19 +100,19 @@ export default function CircularMotionPage() {
       title: 'Circular Path',
   };
 
-  const circleTrace = {
+  const circleTrace: Partial<PlotlyPlotData> = {
       x: Array.from({length: 101}, (_, i) => radius * Math.cos(i/50 * Math.PI)),
       y: Array.from({length: 101}, (_, i) => radius * Math.sin(i/50 * Math.PI)),
-      type: 'scatter',
+      type: 'scatter' as const,
       mode: 'lines',
       line: { color: 'hsl(var(--border))', dash: 'dot' },
       hoverinfo: 'none'
   };
   
-  const objectTrace = {
+  const objectTrace: Partial<PlotlyPlotData> = {
       x: [position.x],
       y: [position.y],
-      type: 'scatter',
+      type: 'scatter' as const,
       mode: 'markers',
       marker: { color: 'hsl(var(--primary))', size: 12 },
       hovertemplate: 'x: %{x:.2f}<br>y: %{y:.2f}<extra></extra>',

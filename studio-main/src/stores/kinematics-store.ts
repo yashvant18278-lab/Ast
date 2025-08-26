@@ -7,7 +7,7 @@ import { getActiveTextarea, insertTextInInput } from '@/lib/editor-utils';
 import { normalizeExpression } from '@/lib/math-utils';
 import { createStore, useStore } from 'zustand';
 import { useContext, createContext } from 'react';
-import type { PlotData as PlotlyPlotData } from 'plotly.js';
+import type { PlotData as PlotlyPlotData, Layout } from 'plotly.js';
 
 type GraphType = 'position' | 'velocity' | 'acceleration';
 type SimulationMode = 'kinematics' | 'equation' | 'multistage';
@@ -40,6 +40,11 @@ interface MotionSummary {
     finalVelocity: number;
 }
 
+interface KinematicsPlot {
+  traces: Array<Partial<PlotlyPlotData>>;
+  layout?: Partial<Layout>;
+}
+
 interface KinematicsState {
   params: KinematicsParams;
   equation: {
@@ -56,7 +61,7 @@ interface KinematicsState {
     acceleration: boolean;
   };
   simulationTime: number;
-  plotData: PlotlyPlotData[] | null;
+  plotData: KinematicsPlot[] | null;
   summary: MotionSummary;
   setMode: (mode: SimulationMode) => void;
   setParams: (newParams: Partial<KinematicsParams>) => void;
@@ -64,7 +69,7 @@ interface KinematicsState {
   setEquationType: (type: EquationType) => void;
   toggleGraphVisibility: (graph: GraphType) => void;
   setSimulationTime: (time: number) => void;
-  insertEquationText: (text: string, elementId: string) => void;
+  insertEquationText: (text: string) => void;
   // Multi-stage actions
   addStage: () => void;
   removeStage: (id: string) => void;
@@ -78,7 +83,7 @@ const defaultParams = { initialPosition: 0, initialVelocity: 0, acceleration: 9.
 // This function only handles differentiation
 const getFunctionsFromEquation = (input: string, type: EquationType) => {
     const node = math.parse(input || "0");
-    const symbols = node.filter(n => n.isSymbolNode && !['pi', 'e'].includes(n.name)).map(n => n.name);
+    const symbols = (node as any).filter((n: any) => n.isSymbolNode && !['pi', 'e'].includes(n.name)).map((n: any) => n.name);
     const independentVar = symbols[0] || 't';
 
     let posExpr: math.MathNode, velExpr: math.MathNode, accExpr: math.MathNode;
@@ -110,7 +115,7 @@ const getFunctionsFromEquation = (input: string, type: EquationType) => {
 }
 
 
-const updateCalculations = (state: KinematicsState): { plotData: PlotlyPlotData[] | null; summary: MotionSummary } => {
+const updateCalculations = (state: KinematicsState): { plotData: KinematicsPlot[] | null; summary: MotionSummary } => {
     const { mode, params, equation, stages, visibleGraphs, simulationTime } = state;
     
     let posData: number[] = [], velData: number[] = [], accData: number[] = [], timeData: number[] = [];
@@ -241,7 +246,7 @@ const updateCalculations = (state: KinematicsState): { plotData: PlotlyPlotData[
             }
         }
 
-        const plots: PlotlyPlotData[] = [];
+        const plots: KinematicsPlot[] = [];
         
         if (visibleGraphs.position) plots.push({
             traces: [{ x: timeData, y: posData, type: 'scatter', mode: 'lines', name: 'Position'}],
@@ -314,7 +319,7 @@ export const createKinematicsStore = () => createStore<KinematicsState>((set, ge
         try {
             const normalized = normalizeExpression(input);
             const node = math.parse(normalized);
-            const symbols = node.filter(n => n.isSymbolNode && !['pi', 'e'].includes(n.name)).map(n => n.name);
+            const symbols = (node as any).filter((n: any) => n.isSymbolNode && !['pi', 'e'].includes(n.name)).map((n: any) => n.name);
             set(state => ({ equation: { ...state.equation, input, error: null, variable: symbols[0] || 't' } }));
             triggerUpdate(get, set);
         } catch (e: any) {
